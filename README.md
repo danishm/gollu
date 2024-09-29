@@ -1,5 +1,6 @@
 GoLLU | Go Client for LibreLinkUp API
 =====================================
+![build status](https://github.com/danishm/gollu/actions/workflows/go.yml/badge.svg)
 
 Description
 -----------
