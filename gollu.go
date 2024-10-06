@@ -3,6 +3,7 @@ package gollu
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,6 +13,7 @@ const (
 	LLUUrl                 = "https://api.libreview.io"
 	LLULoginEndpoint       = "llu/auth/login"
 	LLUConnectionsEndpoint = "llu/connections"
+	LLUGraphEndpoint       = "llu/connections/%s/graph"
 )
 
 // LibreLinkUpClient represents a LibreLinkUp API client, which needs an email address
@@ -72,6 +74,11 @@ func (llu *LibreLinkUpClient) Login() (*LLULoginResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// no http errors so far, checking if there are any API level errors
+	if llr.Error != nil {
+		return nil, errors.New(fmt.Sprintf("login API error: %s", llr.Error.Message))
+	}
 	return &llr, nil
 }
 
@@ -109,6 +116,39 @@ func (llu *LibreLinkUpClient) Connections(ticket LLLULoginResponseAuthTicket) (*
 		return nil, err
 	}
 	return &lcr, nil
+}
+
+func (llu *LibreLinkUpClient) Graph(ticket LLLULoginResponseAuthTicket, patientID string) (*LLUConnectionsGraphResponse, error) {
+
+	// creating the url
+	url := fmt.Sprintf("%s/%s", LLUUrl, fmt.Sprintf(LLUGraphEndpoint, patientID))
+
+	// creating request and setting headers
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	addCommonHeaders(req)
+	req.Header.Add("authorization", fmt.Sprintf("Bearer %s", ticket.Token))
+
+	// making the call
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	lgr := LLUConnectionsGraphResponse{}
+	err = json.Unmarshal(body, &lgr)
+	if err != nil {
+		return nil, err
+	}
+	return &lgr, nil
 }
 
 // addCommonHeaders adds the common headers required for working with the LibreLinkUp API
