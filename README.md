@@ -21,6 +21,10 @@ of values for graph data.
 
 ### Get Last Blood Glucose Value
 
+The following example shows you how to get the latest blood glucose value available. This is achieved simply with
+a call to login and then getting the available connections. The connections call will provide latest values without
+the need to make a 3rd call for historical data.
+
 #### Code - `latest.go`
 
 ```go
@@ -70,6 +74,15 @@ $ go run latest.go foo.bar@test.com fakepassword
 ```
 
 ### Get Series of Glucose Values
+
+The example below will make 3 calls to get a list of blood glucose values for the last 12 hours. This duration is the behavior
+I've seen so far by default.
+
+ - Call 1 - Make a request to login to acquire a bearer token
+ - Call 2 - Get a list of available connections to retrieve a `patientID`
+ - Call 3 - Retrieve the list of historical values, typically for the last 12 hours
+
+This utility simply outputs the vales as a tab seperated values of `[Timestamp, Value]`
 
 #### Code - `graph.go`
 
@@ -147,8 +160,10 @@ $go run graph.go foo.bar@test.com fakepassword
 10/6/2024 12:39:28 PM           114
 10/6/2024 12:44:30 PM           113
 10/6/2024 12:49:28 PM           112
-... <output trucated for clarity>
+...
 ```
+*output trucated for clarity*
+
 License
 -------
 [![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
