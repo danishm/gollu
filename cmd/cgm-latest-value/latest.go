@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/danishm/gollu"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -30,7 +31,11 @@ func main() {
 		fmt.Printf("Error: %s\n", err)
 		os.Exit(-1)
 	}
-	fmt.Println(connections.Data[0].GlucoseMeasurement.Value, time.Time(connections.Data[0].GlucoseMeasurement.Timestamp))
+	valueStr := strconv.FormatInt(connections.Data[0].GlucoseMeasurement.Value, 10)
+	timeStr := time.Time(connections.Data[0].GlucoseMeasurement.Timestamp).Format("2006-01-02 03:04:05 PM")
+	fmt.Println("Value Timestamp")
+	fmt.Println("----- ----------------------")
+	fmt.Printf("%5.5s %s\n", valueStr, timeStr)
 
 	os.Exit(0)
 }
