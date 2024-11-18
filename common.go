@@ -15,6 +15,13 @@ type LLLULoginResponseAuthTicket struct {
 	Duration int64
 }
 
+func (ticket *LLLULoginResponseAuthTicket) DaysToExpiry() int32 {
+	now := time.Now()
+	ticketExpiry := time.Unix(ticket.Expires, 0)
+	difference := ticketExpiry.Sub(now)
+	return rune(difference.Hours() / 24)
+}
+
 type LLUTimestamp time.Time
 
 // UnmarshalJSON implements a custom date unmarshaler for the time format used by LibreLinkup
