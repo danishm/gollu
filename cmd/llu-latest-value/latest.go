@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/danishm/gollu"
+	"github.com/danishm/gollu/managed"
 	"os"
 	"strconv"
-	"time"
 )
 
 func main() {
@@ -18,21 +17,14 @@ func main() {
 	password := os.Args[2]
 
 	// logging in
-	client := gollu.NewLibreLinkUpClient(email, password)
-	resp, err := client.Login()
+	client := managed.NewLLUClient(email, password)
+	bgr, err := client.GetLastValue()
 	if err != nil {
-		fmt.Printf("Error: %s\n", err)
-		os.Exit(-1)
+		fmt.Println("Error:", err.Error())
+		os.Exit(0)
 	}
-
-	// getting latest value
-	connections, err := client.Connections(resp.Data.AuthTicket)
-	if err != nil {
-		fmt.Printf("Error: %s\n", err)
-		os.Exit(-1)
-	}
-	valueStr := strconv.FormatInt(connections.Data[0].GlucoseMeasurement.Value, 10)
-	timeStr := time.Time(connections.Data[0].GlucoseMeasurement.Timestamp).Format("2006-01-02 03:04:05 PM")
+	valueStr := strconv.FormatInt(bgr.Value, 10)
+	timeStr := bgr.Timestamp.Format("2006-01-02 03:04:05 PM")
 	fmt.Println("Value Timestamp")
 	fmt.Println("----- ----------------------")
 	fmt.Printf("%5.5s %s\n", valueStr, timeStr)
