@@ -2,6 +2,7 @@ package gollu
 
 import (
 	"testing"
+	"time"
 )
 
 func TestDaysToExpiry(t *testing.T) {
@@ -11,7 +12,8 @@ func TestDaysToExpiry(t *testing.T) {
 		Duration: 15552000000,
 	}
 
-	days := ticket.DaysToExpiry()
+	from := time.Date(2024, time.November, 18, 17, 00, 00, 00, time.UTC)
+	days := ticket.DaysToExpiry(from)
 	var expected int32 = 179
 
 	if days != expected {

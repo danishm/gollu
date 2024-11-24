@@ -96,10 +96,11 @@ func (llc *LLUClient) login() error {
 func (llc *LLUClient) getAuthTicket() (*gollu.LLLULoginResponseAuthTicket, error) {
 
 	var expired bool = false
+	now := time.Now()
 
 	// check if we have a valid, un-expired auth ticket
 	if llc.ticket != nil {
-		if llc.ticket.DaysToExpiry() <= 1 {
+		if llc.ticket.DaysToExpiry(now) <= 1 {
 			expired = true
 		}
 	} else {
@@ -107,14 +108,14 @@ func (llc *LLUClient) getAuthTicket() (*gollu.LLLULoginResponseAuthTicket, error
 	}
 
 	if !expired {
-		slog.Info("getAuthTicket() returning cached auth ticket", "daysToExpiry", llc.ticket.DaysToExpiry())
+		slog.Info("getAuthTicket() returning cached auth ticket", "daysToExpiry", llc.ticket.DaysToExpiry(now))
 		return llc.ticket, nil
 	}
 
 	slog.Info("getAuthTicket() auth ticket expired")
 	err := llc.login()
 	if err == nil {
-		slog.Info("getAuthTicket() new auth ticket", "daysToExpiry", llc.ticket.DaysToExpiry())
+		slog.Info("getAuthTicket() new auth ticket", "daysToExpiry", llc.ticket.DaysToExpiry(now))
 	}
 	return llc.ticket, err
 }

@@ -15,10 +15,9 @@ type LLLULoginResponseAuthTicket struct {
 	Duration int64
 }
 
-func (ticket *LLLULoginResponseAuthTicket) DaysToExpiry() int32 {
-	now := time.Now()
+func (ticket *LLLULoginResponseAuthTicket) DaysToExpiry(from time.Time) int32 {
 	ticketExpiry := time.Unix(ticket.Expires, 0)
-	difference := ticketExpiry.Sub(now)
+	difference := ticketExpiry.Sub(from)
 	return rune(difference.Hours() / 24)
 }
 
