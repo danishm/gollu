@@ -25,9 +25,9 @@ func main() {
 	}
 	valueStr := strconv.FormatInt(bgr.Value, 10)
 	timeStr := bgr.Timestamp.Format("2006-01-02 03:04:05 PM")
-	fmt.Println("Value Timestamp")
-	fmt.Println("----- ----------------------")
-	fmt.Printf("%5.5s %s\n", valueStr, timeStr)
+	fmt.Println("Value Color   Trend     Timestamp")
+	fmt.Println("----- ------- --------- ----------------------")
+	fmt.Printf("%5.5s %-7s %-9s %s \n", valueStr, bgr.Color, bgr.Trend, timeStr)
 
 	os.Exit(0)
 }

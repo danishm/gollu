@@ -19,18 +19,12 @@ func NewLLUClient(email, password string) LLUClient {
 	}
 }
 
-func (llc *LLUClient) GetLastValue() (*BloodGlucoseReading, error) {
-
+func (llc *LLUClient) GetLastValue() (*BloodGlucoseLatestReading, error) {
 	connections, err := llc.getConnections()
 	if err != nil {
 		return nil, err
 	}
-
-	bgr := BloodGlucoseReading{
-		Value:     connections.Data[0].GlucoseMeasurement.Value,
-		Timestamp: time.Time(connections.Data[0].GlucoseMeasurement.Timestamp),
-	}
-
+	bgr := toBloodGlucoseLatestReading(connections.Data[0].GlucoseMeasurement)
 	return &bgr, nil
 }
 
