@@ -7,9 +7,17 @@ type LLULoginResponse struct {
 }
 
 type LLULoginResponseData struct {
+	User       LLUUserInfo
 	AuthTicket LLLULoginResponseAuthTicket
 }
 
 type LLULoginError struct {
 	Message string
+}
+
+type LLUUserInfo struct {
+	ID        string
+	FirstName string
+	LastName  string
+	Email     string
 }

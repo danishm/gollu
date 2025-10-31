@@ -1,15 +1,17 @@
 package managed
 
 import (
-	"github.com/danishm/gollu"
-	"github.com/pkg/errors"
 	"log/slog"
 	"time"
+
+	"github.com/danishm/gollu"
+	"github.com/pkg/errors"
 )
 
 type LLUClient struct {
-	client gollu.LibreLinkUpClient
-	ticket *gollu.LLLULoginResponseAuthTicket
+	client   gollu.LibreLinkUpClient
+	ticket   *gollu.LLLULoginResponseAuthTicket
+	userInfo *gollu.LLUUserInfo
 }
 
 func NewLLUClient(email, password string) LLUClient {
@@ -69,7 +71,7 @@ func (llc *LLUClient) getConnections() (*gollu.LLUConnectionsResponse, error) {
 		return nil, err
 	}
 	// getting latest value
-	connections, err := llc.client.Connections(*ticket)
+	connections, err := llc.client.Connections(*ticket, llc.userInfo.ID)
 	if err != nil {
 		slog.Error("getConnections()", "error", err.Error())
 		return nil, err
@@ -88,6 +90,7 @@ func (llc *LLUClient) login() error {
 	}
 
 	llc.ticket = &lr.Data.AuthTicket
+	llc.userInfo = &lr.Data.User
 	return nil
 }
 
