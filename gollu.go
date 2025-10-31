@@ -137,6 +137,10 @@ func (llu *LibreLinkUpClient) Graph(ticket LLLULoginResponseAuthTicket, patientI
 	addCommonHeaders(req)
 	req.Header.Add("authorization", fmt.Sprintf("Bearer %s", ticket.Token))
 
+	hasher := sha256.New()
+	hasher.Write([]byte(patientID))
+	req.Header.Add("account-id", hex.EncodeToString(hasher.Sum(nil)))
+
 	// making the call
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
