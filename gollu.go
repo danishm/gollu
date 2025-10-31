@@ -2,6 +2,8 @@ package gollu
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -85,7 +87,7 @@ func (llu *LibreLinkUpClient) Login() (*LLULoginResponse, error) {
 // Connections makes the connections API calls that is used to discover all the device
 // connections available to the user. It can also be used to get the latest value for all
 // the sensors exposed to the user.
-func (llu *LibreLinkUpClient) Connections(ticket LLLULoginResponseAuthTicket) (*LLUConnectionsResponse, error) {
+func (llu *LibreLinkUpClient) Connections(ticket LLLULoginResponseAuthTicket, userId string) (*LLUConnectionsResponse, error) {
 
 	// creating the url
 	url := fmt.Sprintf("%s/%s", LLUUrl, LLUConnectionsEndpoint)
@@ -97,6 +99,10 @@ func (llu *LibreLinkUpClient) Connections(ticket LLLULoginResponseAuthTicket) (*
 	}
 	addCommonHeaders(req)
 	req.Header.Add("authorization", fmt.Sprintf("Bearer %s", ticket.Token))
+
+	hasher := sha256.New()
+	hasher.Write([]byte(userId))
+	req.Header.Add("account-id", hex.EncodeToString(hasher.Sum(nil)))
 
 	// making the call
 	resp, err := http.DefaultClient.Do(req)
@@ -156,5 +162,5 @@ func addCommonHeaders(req *http.Request) {
 	req.Header.Add("content-type", "application/json")
 	req.Header.Add("cache-control", "no-cache")
 	req.Header.Add("product", "llu.android")
-	req.Header.Add("version", "4.7.0")
+	req.Header.Add("version", "4.16.0")
 }
